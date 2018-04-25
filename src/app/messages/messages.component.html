@@ -1,0 +1,6 @@
+<div *ngIf="messageService.messages.length > 0">
+  <button class="clear" (click)="messageService.clear()">清楚历史记录</button>
+  <div *ngFor="let msg of messageService.messages">
+    {{msg}}
+  </div>
+</div>
