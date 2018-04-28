@@ -48,6 +48,66 @@ export class HeroService {
   }
 
   /**
+   * 更新英雄
+   * @param {Hero} newHero
+   * @returns {Observable<any>}
+   */
+  updateHero(newHero: Hero): Observable<any> {
+    const httpOption = {
+      headers: new HttpHeaders({'Content-Type':'application/json'})
+    };
+    return this.http.put(this.heroUrl,newHero,httpOption)
+        .pipe(tap(_=>this.log(`正在重塑英雄 ${newHero.name}`)),
+        catchError(this.handleError<any>(`重塑英雄`)));
+  }
+
+  /**
+   * 添加新的英雄
+   * @param {Hero} newHero
+   * @returns {Observable<Hero>}
+   */
+  createHero(newHero: Hero):Observable<Hero>{
+    const httpOption = {
+      headers: new HttpHeaders({'Content-Type':'application/json'})
+    };
+    return this.http.post(this.heroUrl,newHero,httpOption)
+      .pipe(tap((hero:Hero) => this.log(`正在创造新的英雄:${newHero.name}`)),
+        catchError(this.handleError<Hero>(`创造英雄`)));
+  }
+
+  /**
+   * 删除英雄
+   */
+  deleteHero(hero:Hero | number):Observable<any>{
+    const heroId = typeof hero === 'number' ? hero : hero.id;
+    const url = `${this.heroUrl}/${heroId}`;
+    return this.http.delete(url).pipe(
+      tap(_=>this.log(`编号：${heroId} 已经阵亡`)),
+      catchError(this.handleError<Hero>(`英雄阵亡`))
+    );
+  }
+
+  /**
+   * 根据名称搜索英雄
+   * @param {string} heroName
+   * @returns {Observable<Hero[]>}
+   */
+  searchHero(heroName:string):Observable<Hero[]>{
+    heroName = heroName.trim();
+    if(!heroName){
+      return of([]);
+    }
+    const url = `${this.heroUrl}?name=${heroName}`;
+    return this.http.get<Hero[]>(url).pipe(tap(heroes=>this.log(`正在删选英雄`)));
+  }
+
+
+
+
+
+
+
+  /**
    * 处理异常
    * @param {string} operation
    * @param {T} result
